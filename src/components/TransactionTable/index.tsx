@@ -5,10 +5,10 @@ import { Container } from './styles';
 interface Transactions {
     id: number,
     title: string,
-    value: number,
+    amount: number,
     type: string,
     category: string,
-    createdAt: Date
+    createdAt: string
 }
 
 export function TransactionTable() {
@@ -16,7 +16,7 @@ export function TransactionTable() {
 
     useEffect(() => {
         api.get('/transactions')
-            .then(response => setTransactions(response.data));
+            .then(response => setTransactions(response.data.transactions));
     }, []);
 
     return (
@@ -35,9 +35,16 @@ export function TransactionTable() {
                         transactions.map(t => (
                             <tr key={String(t.id)}>
                                 <td>{t.title}</td>
-                                <td className={t.type}>R${t.value}</td>
+                                <td className={t.type}>
+                                    {new Intl.NumberFormat('pt-BR', {
+                                        style: 'currency',
+                                        currency: 'BRL'
+                                    }).format(Number(t.amount))}
+                                </td>
                                 <td>{t.category}</td>
-                                <td>{t.createdAt}</td>
+                                <td>
+                                    {new Intl.DateTimeFormat('pt-BR').format(new Date(t.createdAt))}    
+                                </td>
                             </tr>
                         ))
                     }
